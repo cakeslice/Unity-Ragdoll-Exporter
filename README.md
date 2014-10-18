@@ -6,7 +6,7 @@ INSTALLATION:
 ------------
 Download the files.
 
-Place the folder inside the Assets folder.
+Place the "Ragdoll Exporter" folder inside the Assets folder.
 
 USAGE:
 ------------
