@@ -67,37 +67,21 @@ public class CharacterJointSettings
     public float lowTwistLimit_Limit;
     [XmlAttribute]
     public float lowTwistLimit_Bounciness;
-    [XmlAttribute]
-    public float lowTwistLimit_Spring;
-    [XmlAttribute]
-    public float lowTwistLimit_Damper;
 
     [XmlAttribute]
     public float highTwistLimit_Limit;
     [XmlAttribute]
     public float highTwistLimit_Bounciness;
-    [XmlAttribute]
-    public float highTwistLimit_Spring;
-    [XmlAttribute]
-    public float highTwistLimit_Damper;
 
     [XmlAttribute]
     public float swing1Limit_Limit;
     [XmlAttribute]
     public float swing1Limit_Bounciness;
-    [XmlAttribute]
-    public float swing1Limit_Spring;
-    [XmlAttribute]
-    public float swing1Limit_Damper;
 
     [XmlAttribute]
     public float swing2Limit_Limit;
     [XmlAttribute]
     public float swing2Limit_Bounciness;
-    [XmlAttribute]
-    public float swing2Limit_Spring;
-    [XmlAttribute]
-    public float swing2Limit_Damper;
 }
 public class BoxColliderSettings
 {
@@ -148,7 +132,6 @@ public class RagdollLoader : MonoBehaviour {
     public GameObject target;
 
 	void Start () {
-        Load(ragdoll.ToString(), target, false);
 	}
 	
     public static void Load(string ragdoll, GameObject target, bool editor)
@@ -281,7 +264,7 @@ public class RagdollLoader : MonoBehaviour {
                     CharacterJoint cJ = gO.AddComponent<CharacterJoint>();
 
                     if (children.ContainsKey(rJ.characterJointSettings.connectedBody))
-                        cJ.connectedBody = children[rJ.characterJointSettings.connectedBody].rigidbody;
+                        cJ.connectedBody = children[rJ.characterJointSettings.connectedBody].GetComponent<Rigidbody>();
                     else
                         Debug.LogError("Ragdoll Loader: connected joint not found (" + rJ.characterJointSettings.connectedBody + " with " + gO.name + ")");
 
@@ -290,32 +273,42 @@ public class RagdollLoader : MonoBehaviour {
                     cJ.swingAxis = MathHelper.FromString(rJ.characterJointSettings.swingAxis);
                     cJ.connectedAnchor = MathHelper.FromString(rJ.characterJointSettings.connectedAnchor);
 
+                    float spring = 225F;
+                    float damper = 10F;
+                    SoftJointLimitSpring sJLS = new SoftJointLimitSpring();
+                    sJLS.damper = damper;
+                    sJLS.spring = spring;
+                    cJ.twistLimitSpring = sJLS;
+                    sJLS = new SoftJointLimitSpring();
+                    sJLS.damper = damper;
+                    sJLS.spring = spring;
+                    cJ.swingLimitSpring = sJLS;
+
+                    float bounciness = .00F; // Joint bounciness when it hits the limit
+                    float contactDistance = 0; // 0 = Default
+
                     SoftJointLimit sJL = new SoftJointLimit();
-                    sJL.bounciness = rJ.characterJointSettings.lowTwistLimit_Bounciness;
+                    sJL.bounciness = bounciness;//rJ.characterJointSettings.lowTwistLimit_Bounciness;
                     sJL.limit = rJ.characterJointSettings.lowTwistLimit_Limit;
-                    sJL.damper = rJ.characterJointSettings.lowTwistLimit_Damper;
-                    sJL.spring = rJ.characterJointSettings.lowTwistLimit_Spring;
+                    sJL.contactDistance = contactDistance;
                     cJ.lowTwistLimit = sJL;
 
                     sJL = new SoftJointLimit();
-                    sJL.bounciness = rJ.characterJointSettings.highTwistLimit_Bounciness;
+                    sJL.bounciness = bounciness;//rJ.characterJointSettings.highTwistLimit_Bounciness;
                     sJL.limit = rJ.characterJointSettings.highTwistLimit_Limit;
-                    sJL.damper = rJ.characterJointSettings.highTwistLimit_Damper;
-                    sJL.spring = rJ.characterJointSettings.highTwistLimit_Spring;
+                    sJL.contactDistance = contactDistance;
                     cJ.highTwistLimit = sJL;
 
                     sJL = new SoftJointLimit();
-                    sJL.bounciness = rJ.characterJointSettings.swing1Limit_Bounciness;
+                    sJL.bounciness = bounciness;//rJ.characterJointSettings.swing1Limit_Bounciness;
                     sJL.limit = rJ.characterJointSettings.swing1Limit_Limit;
-                    sJL.damper = rJ.characterJointSettings.swing1Limit_Damper;
-                    sJL.spring = rJ.characterJointSettings.swing1Limit_Spring;
+                    sJL.contactDistance = contactDistance;
                     cJ.swing1Limit = sJL;
 
                     sJL = new SoftJointLimit();
-                    sJL.bounciness = rJ.characterJointSettings.swing2Limit_Bounciness;
+                    sJL.bounciness = bounciness;//rJ.characterJointSettings.swing2Limit_Bounciness;
                     sJL.limit = rJ.characterJointSettings.swing2Limit_Limit;
-                    sJL.damper = rJ.characterJointSettings.swing2Limit_Damper;
-                    sJL.spring = rJ.characterJointSettings.swing2Limit_Spring;
+                    sJL.contactDistance = contactDistance;
                     cJ.swing2Limit = sJL;
                 }
             }

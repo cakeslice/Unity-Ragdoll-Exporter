@@ -3,7 +3,6 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Text;
-
 using UnityEngine;
 
 public class XMLSerializer
